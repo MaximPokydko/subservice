@@ -23,6 +23,19 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      
+  migrate:
+    image: migrate/migrate
+    container_name: subscription_migrate
+    depends_on:
+      - db
+    volumes:
+      - ./migrations:/migrations
+    command: [
+      "-path=/migrations",
+      "-database=postgres://postgres:postgres@db:5432/subscriptions?sslmode=disable",
+      "up"
+    ]
 
 volumes:
   postgres_data:
