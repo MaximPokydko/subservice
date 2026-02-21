@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"subservice/internal/config"
+	"subservice/internal/handler"
 	"subservice/internal/repository"
 )
 
@@ -25,12 +26,19 @@ func main() {
 
 	log.Println("database connected")
 
+	repo := repository.NewSubscriptionRepository(db)
+
+	handler := handler.NewSubscriptionHandler(repo)
+
+
 	r := gin.Default()
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "pong"})
 	})
 
+	r.POST("/subscriptions", handler.Create)
+	
 	r.Run(":" + cfg.Port)
 
 	_ = db
